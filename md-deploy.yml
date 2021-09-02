@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-dj
+  namespace: mindbox-ns
+spec:
+  selector:
+    matchLabels:
+      name: md-pod
+  template:
+    metadata:
+      name: md-pod
+      labels:
+        name: md-pod
+    spec:
+      containers:
+        - name: dj-latest
+          image: dj:v1
+          imagePullPolicy: Never
+          resources:
+            requests:
+              memory: "128M"
+              cpu: "100m"
+          ports:
+            - name: dj-web-port
+              containerPort: 8000
+              hostPort: 8000 
+          readinessProbe:
+            httpGet:
+              path: /admin
+              port: dj-web-port
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /admin
+              port: dj-web-port
+            initialDelaySeconds: 15
+            periodSeconds: 5
